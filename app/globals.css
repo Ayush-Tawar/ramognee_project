@@ -6,7 +6,12 @@ button {
     all: unset;
     cursor: pointer;
 }
+
 .activeButton {
-    background-color: aquamarine; 
+    background-color: aquamarine;
     color: #fff;
-  }
+}
+
+p, h1, h2, h3 {
+    margin: 0;
+}

@@ -11,10 +11,14 @@ export function LoginPage() {
     const [selectedState, setSelectedState] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
     const [selectedMobileCode, setSelectedMobileCode] = useState("");
+    const [loginData, setLoginData] = useState({ loginEmail: "", loginPassword: "" });
+    const [loginErrors, setLoginErrors] = useState({});
+    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
 
 
     const initialFormData = {
-        userType: "individual",
+        userType: "",
         firstName: "",
         lastName: "",
         email: "",
@@ -34,7 +38,8 @@ export function LoginPage() {
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
     const router = useRouter();
-    console.log("errors", errors);
+
+
     const handleLoginClick = () => {
         setIsLoginFormVisible(true);
         setIsSignUpFormVisible(false);
@@ -51,38 +56,60 @@ export function LoginPage() {
             ...formData,
             [name]: value,
         });
+        setLoginData({
+            ...loginData,
+            [name]: value,
+        })
     };
 
     const handleCountryChange = (event) => {
         const selectedCountry = event.target.value;
-        setSelectedCountry(selectedCountry);
-        setSelectedState(""); // Clear selected state when country changes
-        setSelectedCity(""); // Clear selected city when country changes
+        setFormData({
+            ...formData,
+            country: selectedCountry,
+            state: "",
+            city: "",
+        });
+        setSelectedCountry(selectedCountry)
     };
 
-    // Event handler for selecting a state.
     const handleStateChange = (event) => {
-        const selectedState = event.target.value;
-        setSelectedState(selectedState);
-        setSelectedCity(""); // Clear selected city when state changes
+        const selectedState = event.target.value
+        setFormData({
+            ...formData,
+            state: selectedState,
+            city: "",
+        });
+        setSelectedState(selectedState)
     };
 
-    // Event handler for selecting a city.
     const handleCityChange = (event) => {
         const selectedCity = event.target.value;
-        setSelectedCity(selectedCity);
+        setFormData({
+            ...formData,
+            city: selectedCity,
+        });
+        setSelectedCity(selectedCity)
     };
 
     const handleMobileCodeChange = (event) => {
         const selectedMobileCode = event.target.value;
         setSelectedMobileCode(selectedMobileCode);
+        setFormData({
+            ...formData,
+            mobileCode: selectedMobileCode,
+        });
     };
 
     const validationSchema = Yup.object().shape({
-        firstName: Yup.string().required("First name is required"),
-        lastName: Yup.string().required("Last name is required"),
-        email: Yup.string().email("Invalid email address").required("Email is required"),
+        firstName: Yup.string()
+            .matches(/^[A-Za-z]+$/, 'First name must contain only alphabet characters')
+            .required('First name is required'),
+        lastName: Yup.string()
+            .matches(/^[A-Za-z]+$/, 'Last name must contain only alphabet characters')
+            .required('Last name is required'),
         address: Yup.string().required("Address is required"),
+        email: Yup.string().email("Invalid email address").required("Email is required"),
         country: Yup.string().required("Country is required"),
         state: Yup.string().required("State is required"),
         city: Yup.string().required("City is required"),
@@ -115,13 +142,17 @@ export function LoginPage() {
             .required("Mobile number is required"),
         // Add more validation rules for other fields as needed
     });
-
     const handleSignup = async (event) => {
         event.preventDefault();
+        console.log(formData)
+        console.log(errors)
+        console.log("Error: ", Object.values(errors))
         try {
             await validationSchema.validate(formData, { abortEarly: false });
             setFormData(initialFormData);
             setErrors({});
+            setIsLoginFormVisible(true)
+            setIsSignUpFormVisible(false)
         } catch (validationErrors) {
             const errors = {};
             validationErrors.inner.forEach((error) => {
@@ -129,10 +160,37 @@ export function LoginPage() {
             });
             setErrors(errors);
         }
+        console.log(errors)
+        if (!errors) {
+            setIsLoginFormVisible(true)
+            setIsSignUpFormVisible(false)
+        }
     };
-    const handleSubmit = () => {
-        console.log("working ......");
-        router.push("/product");
+
+    const loginSchema = Yup.object().shape({
+        loginEmail: Yup.string()
+            .email("Invalid email address")
+            .required("Login Email is required"),
+        loginPassword: Yup.string()
+            .required("Password is required")
+            .min(8, "Login Password must be at least 8 characters long"),
+    });
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+            await loginSchema.validate(loginData, { abortEarly: false });
+            setIsFormSubmitted(true);
+            router.push("/product"); // Replace with the desired page URL
+        } catch (validationErrors) {
+            const newErrors = {};
+            validationErrors.inner.forEach((error) => {
+                newErrors[error.path] = error.message;
+            });
+            setLoginErrors(newErrors);
+            console.log(newErrors)
+        }
     };
 
     return (
@@ -147,30 +205,46 @@ export function LoginPage() {
                 <button
                     className={`flex align-center w-full p-1 rounded-full justify-center ${isSignUpFormVisible ? "activeButton" : ""}`}
                     onClick={handleSignUpClick}
-                >
-                    Sign Up
+                >Sign Up
                 </button>
 
             </div>
             {isLoginFormVisible && (
-                <form className="flex flex-col mt-8">
+                <div className="flex flex-col mt-8">
                     <div className="flex flex-col">
                         <label className="p-1">
                             Email:
                         </label>
-                        <input className="border-2 rounded-full p-1" placeholder="Email" type="email" />
+                        <input className="border-2 rounded-full ps-5 p-1"
+                            name="loginEmail"
+                            value={loginData.loginEmail}
+                            onChange={handleInputChange}
+                            placeholder="Email"
+                            type="email" />
+                        <p className="text-red-500 text-sm">{loginErrors.loginEmail}</p>
                     </div>
                     <div className="flex flex-col">
                         <label className="p-1">
                             Password:
                         </label>
-                        <input className="border-2 rounded-full p-1" type="password" placeholder="Password" />
+                        <input
+                            value={loginData.loginPassword}
+                            onChange={handleInputChange}
+                            className="border-2 rounded-full ps-5 p-1"
+                            type="password" name="loginPassword"
+                            placeholder="Password" />
+                        <p className="text-red-500 text-sm">{loginErrors.loginPassword}</p>
                     </div>
-                    <button onClick={handleSubmit} className="activeButton rounded-full mt-4 p-1 flex justify-center align-center" type="submit">Log me in </button>
-                </form>
+                    <div className="flex w-full justify-end mt-4">
+                        <button onClick={() => router.push('/resetPassword')} className="text-blue-600" >Forgot password ?</button>
+                    </div>
+                    <button
+                        onClick={handleSubmit}
+                        className="activeButton rounded-full mt-4 p-1 flex justify-center align-center" type="submit">Log me in </button>
+                </div>
             )}
             {isSignUpFormVisible && (
-                <form className="mt-8" onSubmit={ () => handleSubmit}>
+                <form className="mt-8" onSubmit={handleSubmit}>
                     <div>
                         <label className="my-2">Individual/Enterprise/Goverment</label>
                         <div className="w-full flex justify-between">
@@ -254,7 +328,7 @@ export function LoginPage() {
                         <div className="flex w-full items-center">
                             <label>Country:</label>
                             <div className="ms-4">
-                                <select className="border-2 p-2 w-full rounded" value={selectedCountry} onChange={handleCountryChange}>
+                                <select className="border-2 p-2 w-full rounded" value={formData.country} onChange={handleCountryChange}>
                                     <option value="">Select a country</option>
                                     {countries.map((country) => (
                                         <option key={country} value={country}>
@@ -268,7 +342,7 @@ export function LoginPage() {
                         <div className="flex w-full items-center">
                             <label>State:</label>
                             <div className="ms-4">
-                                <select className="border-2 p-2  w-full rounded" value={selectedState} onChange={handleStateChange} disabled={!selectedCountry}>
+                                <select className="border-2 p-2  w-full rounded" value={formData.state} onChange={handleStateChange} disabled={!selectedCountry}>
                                     <option value="">Select a state</option>
                                     {selectedCountry &&
                                         statesByCountry[selectedCountry].map((state) => (
@@ -283,7 +357,7 @@ export function LoginPage() {
                         <div className="flex w-full items-center">
                             <label>City:</label>
                             <div className="ms-4">
-                                <select className="border-2 p-2 w-full rounded" value={selectedCity} onChange={handleCityChange} disabled={!selectedState}>
+                                <select className="border-2 p-2 w-full rounded" value={formData.city} onChange={handleCityChange} disabled={!selectedState}>
                                     <option value="">Select a city</option>
                                     {selectedState &&
                                         citiesByState[selectedState].map((city) => (
@@ -310,7 +384,7 @@ export function LoginPage() {
                     <div className="flex flex-col">
                         <CountryMobileCodeDropdown
                             countryMobileCodes={["+1", "+44", "+91"]} // Example mobile codes
-                            selectedCode={selectedMobileCode}
+                            selectedCode={formData.mobileCode}
                             onChange={handleMobileCodeChange} />
                         <p className="text-red-500 text-sm">{errors.mobileCode}</p>
                     </div>
