@@ -18,9 +18,9 @@ function ProductCard({ product, onAddToCart, onRemoveFromCart }) {
   };
 
   return (
-    <div className="bg-white p-5 gap-5 flex flex-col justify-center items-center shadow-md m-2 w-1/3">
-      <img src={product.image} alt={product.title} className="w-full h-48 object-cover mb-2" />
-      <h3 className="text-lg font-semibold">{product.title}</h3>
+    <div className="bg-white p-5 gap-4 flex flex-col justify-center items-center shadow-md m-2 w-1/3">
+      <img src={product.image} alt={product.title} className=" productImage mb-2" />
+      <p className="text-lg text-base font-semibold">{product.title}</p>
       <p className="text-gray-500">${product.price}</p>
       <div className="flex items-center justify-center w-full mt-2">
         <button onClick={handleRemoveFromCart} className="bg-gray-200 w-1/4 flex justify-center p-1 rounded">
