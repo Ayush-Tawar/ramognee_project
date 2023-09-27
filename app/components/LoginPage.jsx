@@ -4,7 +4,7 @@ import CountryMobileCodeDropdown from "./CountryMobileCodeDropdown";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 
-function LoginPage() {
+export function LoginPage() {
     const [isLoginFormVisible, setIsLoginFormVisible] = useState(true);
     const [isSignUpFormVisible, setIsSignUpFormVisible] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState("");
@@ -33,8 +33,8 @@ function LoginPage() {
 
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
-    const router = useRouter()
-    console.log("errors", errors)
+    const router = useRouter();
+    console.log("errors", errors);
     const handleLoginClick = () => {
         setIsLoginFormVisible(true);
         setIsSignUpFormVisible(false);
@@ -90,7 +90,7 @@ function LoginPage() {
             .typeError("Pincode must be a number") // Custom error message for non-numeric input
             .required("Pincode is required")
             .positive("Pincode must be a positive number") // Optionally enforce positivity
-            .integer("Pincode must be an integer"), // Optionally enforce that it's an integer
+            .integer("Pincode must be an integer"),
 
         fax: Yup.number()
             .typeError("Fax must be a number") // Custom error message for non-numeric input
@@ -106,7 +106,7 @@ function LoginPage() {
             ),
         confirmPassword: Yup.string()
             .required("Confirm Password is required")
-            .oneOf([Yup.ref("password"), null], "Passwords must match"), // Check if it matches the 'password' field
+            .oneOf([Yup.ref("password"), null], "Passwords must match"),
         phone: Yup.string()
             .matches(/^\d{10}$/, "Phone number must be 10 digits")
             .required("Phone number is required"),
@@ -131,23 +131,21 @@ function LoginPage() {
         }
     };
     const handleSubmit = () => {
-        console.log("working ......")
-        router.push("./product")
-    }
+        console.log("working ......");
+        router.push("/product");
+    };
 
     return (
         <div className="p-10 w-3/4">
             <div className="flex justify-between topButtonContainer rounded-full border-2">
                 <button
-                    className={`flex align-center w-full p-1 rounded-full justify-center ${isLoginFormVisible ? "activeButton" : ""
-                        }`}
+                    className={`flex align-center w-full p-1 rounded-full justify-center ${isLoginFormVisible ? "activeButton" : ""}`}
                     onClick={handleLoginClick}
                 >
                     Login
                 </button>
                 <button
-                    className={`flex align-center w-full p-1 rounded-full justify-center ${isSignUpFormVisible ? "activeButton" : ""
-                        }`}
+                    className={`flex align-center w-full p-1 rounded-full justify-center ${isSignUpFormVisible ? "activeButton" : ""}`}
                     onClick={handleSignUpClick}
                 >
                     Sign Up
@@ -172,7 +170,7 @@ function LoginPage() {
                 </form>
             )}
             {isSignUpFormVisible && (
-                <form className="mt-8" onSubmit={handleSubmit}>
+                <form className="mt-8" onSubmit={ () => handleSubmit}>
                     <div>
                         <label className="my-2">Individual/Enterprise/Goverment</label>
                         <div className="w-full flex justify-between">
@@ -184,8 +182,7 @@ function LoginPage() {
                                     name="userType"
                                     value="individual"
                                     checked={formData.userType === "individual"}
-                                    onChange={handleInputChange}
-                                />
+                                    onChange={handleInputChange} />
                             </label>
                             <label>
                                 Enterprise
@@ -195,8 +192,7 @@ function LoginPage() {
                                     name="userType"
                                     value="enterprise"
                                     checked={formData.userType === "enterprise"}
-                                    onChange={handleInputChange}
-                                />
+                                    onChange={handleInputChange} />
                             </label>
                             <label>
                                 Government
@@ -206,8 +202,7 @@ function LoginPage() {
                                     name="userType"
                                     value="government"
                                     checked={formData.userType === "government"}
-                                    onChange={handleInputChange}
-                                />
+                                    onChange={handleInputChange} />
                             </label>
                         </div>
                     </div>
@@ -220,8 +215,7 @@ function LoginPage() {
                                 type="text"
                                 name="firstName"
                                 value={formData.firstName}
-                                onChange={handleInputChange}
-                            />
+                                onChange={handleInputChange} />
                             <p className="text-red-500 text-sm">{errors.firstName}</p>
                         </div>
                         <div className="flex w-full flex-col">
@@ -231,8 +225,7 @@ function LoginPage() {
                                 type="text"
                                 name="lastName"
                                 value={formData.lastName}
-                                onChange={handleInputChange}
-                            />
+                                onChange={handleInputChange} />
                             <p className="text-red-500 text-sm">{errors.lastName}</p>
                         </div>
                     </div>
@@ -243,8 +236,7 @@ function LoginPage() {
                             type="email"
                             name="email"
                             value={formData.email}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.email}</p>
                     </div>
                     <div className="flex flex-col">
@@ -254,8 +246,7 @@ function LoginPage() {
                             type="text"
                             name="address"
                             value={formData.address}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.address}</p>
                     </div>
 
@@ -313,16 +304,14 @@ function LoginPage() {
                             type="number"
                             name="pincode"
                             value={formData.pincode}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.pincode}</p>
                     </div>
                     <div className="flex flex-col">
                         <CountryMobileCodeDropdown
                             countryMobileCodes={["+1", "+44", "+91"]} // Example mobile codes
                             selectedCode={selectedMobileCode}
-                            onChange={handleMobileCodeChange}
-                        />
+                            onChange={handleMobileCodeChange} />
                         <p className="text-red-500 text-sm">{errors.mobileCode}</p>
                     </div>
                     <div className="flex flex-col">
@@ -332,8 +321,7 @@ function LoginPage() {
                             type="number"
                             name="mobile"
                             value={formData.mobile}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.mobile}</p>
                     </div>
                     <div className="flex flex-col">
@@ -343,8 +331,7 @@ function LoginPage() {
                             type="number"
                             name="fax"
                             value={formData.fax}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.fax}</p>
                     </div>
                     <div className="flex flex-col">
@@ -354,8 +341,7 @@ function LoginPage() {
                             type="phone"
                             name="phone"
                             value={formData.phone}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.phone}</p>
                     </div>
                     <div className="flex flex-col">
@@ -365,8 +351,7 @@ function LoginPage() {
                             type="password"
                             name="password"
                             value={formData.password}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.password}</p>
                     </div>
                     <div className="flex flex-col">
@@ -376,8 +361,7 @@ function LoginPage() {
                             type="password"
                             name="confirmPassword"
                             value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                        />
+                            onChange={handleInputChange} />
                         <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
                     </div>
 
@@ -388,5 +372,3 @@ function LoginPage() {
         </div>
     );
 }
-
-export default LoginPage;
